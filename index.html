@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Français Exclusif - Madame und Monsieur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #05070a;
+            color: #d1d5db; 
+            font-family: 'Georgia', serif;
+            /* iPhone dynamische Höhe */
+            height: 100dvh; 
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .nav-top-btn {
+            background-color: #0f172a;
+            border: 1px solid #1e293b;
+            font-size: 0.6rem;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+        .nav-top-btn.active {
+            border-color: #3b82f6;
+            color: #ffffff;
+            background-color: #1e3a8a;
+        }
+        .recipe-card {
+            background: linear-gradient(145deg, #111827, #030712);
+            border: 1px solid #1e293b;
+            border-top: 2px solid #ef4444; 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .bottom-nav-btn {
+            background-color: #0f172a;
+            color: #ffffff;
+            border: 1px solid #1e293b;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            height: 55px;
+            text-transform: uppercase;
+        }
+        .bottom-nav-btn:active {
+            background-color: #3b82f6;
+        }
+        .french-text {
+            font-family: 'Times New Roman', serif;
+            color: #ffffff;
+        }
+        .hidden { display: none !important; }
+        
+        .premium-footer {
+            border-top: 1px solid #1e293b;
+            padding: 10px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.5);
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <header class="text-center mb-3">
+        <h1 class="text-xl font-light tracking-[0.3em] text-white uppercase italic">Français Exclusif</h1>
+        <p class="text-[9px] text-blue-400 font-mono tracking-widest mt-1 uppercase">Version 1.3.1</p>
+    </header>
+
+    <nav class="grid grid-cols-4 gap-1 mb-3">
+        <button onclick="setCategory('basis')" id="btn-basis" class="nav-top-btn py-3 uppercase">Basis</button>
+        <button onclick="setCategory('alltag')" id="btn-alltag" class="nav-top-btn py-3 uppercase">Alltag</button>
+        <button onclick="setCategory('reise')" id="btn-reise" class="nav-top-btn py-3 uppercase">Reise</button>
+        <button onclick="setCategory('essen')" id="btn-essen" class="nav-top-btn py-3 uppercase">Essen</button>
+    </nav>
+
+    <main class="flex-grow flex flex-col mb-3">
+        <div id="home-screen" class="recipe-card p-6 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-white to-red-600"></div>
+            
+            <div class="mt-auto mb-auto">
+                <div class="inline-block mb-4 p-3 rounded-full border border-blue-500/30 bg-blue-500/5">
+                    <span class="text-4xl">🇫🇷</span>
+                </div>
+                
+                <h2 class="french-text text-3xl mb-2 text-white italic tracking-wide">Bienvenue</h2>
+                <div class="h-px w-16 bg-amber-500 mx-auto mb-4"></div>
+                
+                <p class="text-lg text-blue-400 font-light mb-6 uppercase tracking-[0.2em]">Madame und Monsieur</p>
+                
+                <div class="space-y-4 px-4">
+                    <p id="motivation-quote" onclick="speakMotivation()" class="text-sm italic text-slate-300 leading-relaxed min-h-[40px] cursor-pointer active:text-blue-400">
+                        "La vie est belle." (Das Leben ist schön.)
+                    </p>
+                    <p class="text-[9px] text-amber-500/60 uppercase tracking-[0.2em] mt-8 pt-4 border-t border-slate-800/50">
+                        Wähle oben eine Kategorie <br>um zu beginnen
+                    </p>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-white to-red-600"></div>
+        </div>
+
+        <div id="learning-screen" onclick="changePhrase(1)" class="recipe-card p-6 rounded-none text-center cursor-pointer hidden">
+            <div id="counter" class="text-[9px] text-blue-400 mb-2 tracking-widest uppercase italic border-b border-blue-900/30 pb-1 inline-block mx-auto"></div>
+            <h2 id="phrase-fr" class="french-text text-3xl font-serif mb-4 leading-tight"></h2>
+            <p id="phrase-de" class="text-lg italic text-slate-400"></p>
+            <p id="phrase-phon" class="text-sm text-amber-500/40 mt-6 font-mono"></p>
+        </div>
+    </main>
+
+    <div class="flex gap-2 mb-3">
+        <button onclick="changePhrase(-1)" class="bottom-nav-btn flex-1">Zurück</button>
+        <button onclick="goHome()" class="bottom-nav-btn flex-1 border-blue-500 font-bold">Menü</button>
+        <button onclick="changePhrase(1)" class="bottom-nav-btn flex-1">Vor</button>
+    </div>
+
+    <footer class="premium-footer">
+        <p class="text-[10px] text-slate-500 tracking-wider font-light uppercase">
+            Dies ist eine Lern-App für Französisch – <span class="text-blue-400">Premium Edition</span>.
+        </p>
+    </footer>
+
+    <script>
+        const datenbank = {
+            basis: [
+                { fr: "Bonjour", de: "Guten Tag / Hallo", ph: "Bon-shur" },
+                { fr: "Salut", de: "Hallo / Tschüss", ph: "Sa-lü" },
+                { fr: "Ça va ?", de: "Wie geht's?", ph: "Sa wa?" },
+                { fr: "Merci beaucoup", de: "Vielen Dank", ph: "Mer-ssí boh-kú" },
+                { fr: "S'il vous plaît", de: "Bitte (höflich)", ph: "Sill-wu-pläh" },
+                { fr: "De rien", de: "Gern geschehen", ph: "De ri-än" },
+                { fr: "Oui / Non", de: "Ja / Nein", ph: "Wi / No" },
+                { fr: "Je m'appelle...", de: "Ich heiße...", ph: "Sche ma-päll" },
+                { fr: "Enchanté", de: "Sehr erfreut", ph: "An-schan-té" },
+                { fr: "Excusez-moi", de: "Entschuldigen Sie", ph: "Ex-kü-ssé-moa" },
+                { fr: "Pardon", de: "Entschuldigung", ph: "Par-dóng" },
+                { fr: "Au revoir", de: "Auf Wiedersehen", ph: "Oh re-voar" },
+                { fr: "À bientôt", de: "Bis bald", ph: "A bi-än-toh" },
+                { fr: "Bonne nuit", de: "Gute Nacht", ph: "Bon nü-ih" },
+                { fr: "Je comprends", de: "Ich verstehe", ph: "Sche com-práng" },
+                { fr: "Je ne sais pas", de: "Ich weiß nicht", ph: "Sche ne ssä pa" },
+                { fr: "Parlez-vous allemand ?", de: "Sprechen Sie Deutsch?", ph: "Par-lé wu al-mang?" },
+                { fr: "D'accord", de: "Einverstanden", ph: "Da-kór" },
+                { fr: "Bien sûr", de: "Natürlich", ph: "Bi-än sür" },
+                { fr: "Je t'aime", de: "Ich liebe dich", ph: "Sche täm" }
+            ],
+            alltag: [
+                { fr: "Quelle heure est-il ?", de: "Wie spät ist es?", ph: "Käll ör eh-til?" },
+                { fr: "Où sind les toilettes ?", de: "Wo sind die Toiletten?", ph: "Uh song leh toa-lätt?" },
+                { fr: "C'est combien ?", de: "Was kostet das?", ph: "Säh com-bi-än?" },
+                { fr: "J'ai faim / soif", de: "Ich habe Hunger / Durst", ph: "Schäh fäng / soaf" },
+                { fr: "Je suis fatigué(e)", de: "Ich bin müde", ph: "Sche sü-ih fa-ti-gé" },
+                { fr: "Il fait beau", de: "Das Wetter ist schön", ph: "Il fäh boh" },
+                { fr: "Il pleut", de: "Es regnet", ph: "Il plö" },
+                { fr: "Où est le magasin ?", de: "Wo ist der Laden?", ph: "Uh eh le ma-ga-säng?" },
+                { fr: "Maintenant / Après", de: "Jetzt / Später", ph: "Mäng-te-nang / A-preh" },
+                { fr: "Aujourd'hui", de: "Heute", ph: "O-shur-dü-ih" },
+                { fr: "Demain", de: "Morgen", ph: "De-mäng" },
+                { fr: "Hier", de: "Gestern", ph: "I-ähr" },
+                { fr: "Pas de problème", de: "Kein Problem", ph: "Pa de pro-bläm" },
+                { fr: "C'est cher", de: "Das ist teuer", ph: "Säh schär" },
+                { fr: "Je cherche...", de: "Ich suche...", ph: "Sche schärsch" },
+                { fr: "Peut-être", de: "Vielleicht", ph: "Pö-tähr" },
+                { fr: "Bonne idée", de: "Gute Idee", ph: "Bon i-dé" },
+                { fr: "À tout à l'heure", de: "Bis gleich", ph: "A tut-a-lör" },
+                { fr: "Vraiment ?", de: "Wirklich?", ph: "Vrä-mang?" },
+                { fr: "Félicitations !", de: "Glückwunsch!", ph: "Fe-li-ssi-ta-ssióng" }
+            ],
+            reise: [
+                { fr: "Où est la gare ?", de: "Wo ist der Bahnhof?", ph: "Uh eh la gar?" },
+                { fr: "Où est l'aéroport ?", de: "Wo ist der Flughafen?", ph: "Uh eh la-e-ro-pór?" },
+                { fr: "À droite / gauche", de: "Rechts / Links", ph: "A droat / gohsch" },
+                { fr: "Tout droit", de: "Geradeaus", ph: "Tu droa" },
+                { fr: "Un billet pour...", de: "Ein Ticket nach...", ph: "Äng bi-yé pur" },
+                { fr: "Où est l'hôtel ?", de: "Wo ist das Hotel?", ph: "Uh eh lo-täll?" },
+                { fr: "Le taxi / bus", de: "Das Taxi / Bus", ph: "Le tak-ssi / büss" },
+                { fr: "Je suis perdu(e)", de: "Ich habe mich verlaufen", ph: "Sche sü-ih per-dü" },
+                { fr: "Le passeport", de: "Der Reisepass", ph: "Le pass-pór" },
+                { fr: "L'avion / Le train", de: "Flugzeug / Zug", ph: "La-vióng / träng" },
+                { fr: "Où ist le centre-ville ?", de: "Wo ist das Zentrum?", ph: "Uh eh le sang-tre vill?" },
+                { fr: "C'est ouvert / fermé ?", de: "Ist es offen / zu?", ph: "Säh u-vär / fer-mé?" },
+                { fr: "Bon voyage !", de: "Gute Reise!", ph: "Bon voa-yásch" },
+                { fr: "Aidez-moi", de: "Helfen Sie mir", ph: "Eh-dé moa" },
+                { fr: "L'arrêt", de: "Die Haltestelle", ph: "La-räh" },
+                { fr: "La valise", de: "Der Koffer", ph: "La wa-lís" },
+                { fr: "Quelle direction ?", de: "Welche Richtung?", ph: "Käll di-rek-ssióng?" },
+                { fr: "Un plan de ville", de: "Ein Stadtplan", ph: "Äng plang de vill" },
+                { fr: "Près d'ici", de: "In der Nähe", ph: "Präh di-ssí" },
+                { fr: "L'entrée", de: "Eingang", ph: "An-tré" }
+            ],
+            essen: [
+                { fr: "La carte, s'il vous plaît", de: "Die Karte, bitte", ph: "La kart sill-wu-pläh" },
+                { fr: "Je voudrais...", de: "Ich möchte gerne...", ph: "Sche vu-dräh" },
+                { fr: "Une table pour deux", de: "Ein Tisch für zwei", ph: "Ün tabl pur dö" },
+                { fr: "L'addition, s'il vous plaît", de: "Die Rechnung, bitte", ph: "La-di-ssióng sill-wu-pläh" },
+                { fr: "Un café / thé", de: "Kaffee / Tee", ph: "Äng ka-fé / té" },
+                { fr: "L'eau gazeuse", de: "Mineralwasser", ph: "Loh ga-ssös" },
+                { fr: "Le vin rouge", de: "Der Rotwein", ph: "Le väng rusch" },
+                { fr: "C'était délicieux", de: "Es war köstlich", ph: "Sye-täh de-li-ssi-ö" },
+                { fr: "Bon appétit !", de: "Guten Appetit!", ph: "Bon a-pé-tí" },
+                { fr: "Santé !", de: "Prost!", ph: "San-té" },
+                { fr: "Le fromage", de: "Der Käse", ph: "Le fro-másch" },
+                { fr: "Le petit-déjeuner", de: "Das Frühstück", ph: "Le pe-tí de-shö-né" },
+                { fr: "Végétarien(ne)", de: "Vegetarisch", ph: "Vé-shé-ta-ri-äng" },
+                { fr: "Le pain / beurre", de: "Brot / Butter", ph: "Le päng / bör" },
+                { fr: "Un verre de...", de: "Ein Glas...", ph: "Äng vär de" },
+                { fr: "Sans sucre", de: "Ohne Zucker", ph: "Sang ssükr" },
+                { fr: "Le dessert", de: "Der Nachtisch", ph: "Le de-ssär" },
+                { fr: "Une bière", de: "Ein Bier", ph: "Ün bi-ähr" },
+                { fr: "Le serveur", de: "Der Kellner", ph: "Le ser-vör" },
+                { fr: "Très bon", de: "Sehr gut", ph: "Träh bong" }
+            ]
+        };
+
+        let currentCat = null;
+        let currentIndex = 0;
+
+        function setCategory(cat) {
+            currentCat = cat;
+            currentIndex = 0;
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('learning-screen').classList.remove('hidden');
+            document.querySelectorAll('.nav-top-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + cat).classList.add('active');
+            updateUI();
+            playAudio();
+        }
+
+        function changePhrase(dir) {
+            if (!currentCat) return;
+            const list = datenbank[currentCat];
+            currentIndex += dir;
+            if (currentIndex < 0) currentIndex = list.length - 1;
+            if (currentIndex >= list.length) currentIndex = 0;
+            updateUI();
+            playAudio();
+        }
+
+        function updateUI() {
+            const item = datenbank[currentCat][currentIndex];
+            document.getElementById('phrase-fr').innerText = item.fr;
+            document.getElementById('phrase-de').innerText = item.de;
+            document.getElementById('phrase-phon').innerText = "[" + item.ph + "]";
+            document.getElementById('counter').innerText = `${currentCat.toUpperCase()} : ${currentIndex + 1} / ${datenbank[currentCat].length}`;
+        }
+
+        function playAudio() {
+            const text = datenbank[currentCat][currentIndex].fr;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.8;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Neue Funktion für Motivationssprüche
+        function speakMotivation() {
+            const fullQuote = document.getElementById('motivation-quote').innerText;
+            const frenchOnly = fullQuote.split('(')[0].replace(/"/g, '').trim();
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(frenchOnly);
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.8;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function goHome() {
+            currentCat = null;
+            const quotes = [
+                '"La vie est belle." (Das Leben ist schön.)',
+                '"Vouloir, c\'est pouvoir." (Wollen ist Können.)',
+                '"C\'est la vie." (So ist das Leben.)',
+                '"Petit à petit, l\'oiseau fait son nid." (Stück für Stück...)',
+                '"Joie de vivre." (Lebensfreude.)'
+            ];
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('motivation-quote').innerText = randomQuote;
+
+            document.getElementById('home-screen').classList.remove('hidden');
+            document.getElementById('learning-screen').classList.add('hidden');
+            document.querySelectorAll('.nav-top-btn').forEach(b => b.classList.remove('active'));
+            
+            // Automatisch vorlesen beim Menü-Aufruf
+            setTimeout(speakMotivation, 500);
+        }
+    </script>
+</body>
+</html>
+
